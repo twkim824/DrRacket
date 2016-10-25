@@ -1,0 +1,107 @@
+(require 2htdp/image)
+
+;; Problem 1: multiply-list multiplies all the numbers in a list
+;; Type signature: list -> number
+;; Base case: the list is empty
+
+(define (multiply-list list)
+  
+  (if (empty? list)
+      1
+      
+      (* (first list) (multiply-list (rest list)))))
+
+(check-expect (multiply-list (list)) 1)
+
+(check-expect (multiply-list (list 1 2 3)) 6)
+
+;; Problem 2: iterated-overlay overlays pictures on top of each other
+;; Type signature: (procedure number) -> image
+;; Base case: there is no image (0 images).
+
+(define (iterated-overlay image count)
+  
+  (if (= count 0)
+      empty-image
+      
+      (overlay (image (- count 1))
+               (iterated-overlay image (- count 1)))))
+
+(check-expect
+ (iterated-overlay
+  (lambda (n) (square (* 10 n) "outline" "black")) 0) empty-image)
+
+(check-expect
+ (iterated-overlay
+  (lambda (n) (square (* 10 n) "outline" "black")) 5) image)
+
+;; Problem 3: Abstract code for iterated-overlay into a new procedure.
+;; Type signature:
+;; Base case: there is no image (0 images).
+
+(define (iterate combiner generator count)
+  
+  (if (= count 0)
+      empty-image
+      
+      (combiner (generator (- count 1))
+              (iterate combiner generator (- count 1)))))
+
+
+(check-expect
+ (iterate beside
+          (lambda (n) (square 50 "outline" "black")) 0) empty-image)
+
+(check-expect
+ (iterate beside
+          (lambda (n) (square 50 "outline" "black")) 5) image)
+
+;; Problem 4: sum-tree adds up all the numbers in a tree of numbers.
+;; Type signature: (list (nested lists)) -> numbers
+;; Base case: the list has one number.
+
+(define (sum-tree numbertree)
+  
+  (if (number? numbertree)
+      numbertree
+      
+      (apply + (map sum-tree numbertree))))
+
+(check-expect
+ (sum-tree (list 0)) 0)
+
+(check-expect
+ (sum-tree (list 1 (list 1 2 3))) 7)
+
+;; Problem 5: max-tree returns the largest number from a tree of numbers.
+;; Type signature: (listof number) -> number
+;; Base case: one number in the numbertree.
+
+(define (max-tree numbertree)
+  
+  (if (number? numbertree)
+      numbertree
+
+      (apply max (map max-tree numbertree))))
+
+(check-expect (max-tree 3) 3)
+
+(check-expect (max-tree (list 1 2 (list 3 4) (list 100 (list 500)))) 500)
+
+
+;; Problem 6: depth takes a tree of numbers and returns the number of levels of nesting within.
+;; Type signature: (listof number) -> number
+;; Base case: one number.
+
+(define (depth numbertree)
+  
+  (if (number? numbertree)
+      0
+      
+      (+ 1 (apply max (map depth numbertree)))))
+
+(check-expect (depth 1) 0)
+
+(check-expect (depth (list 1 2)) 1)
+
+(check-expect (depth (list 1 (list 2))) 2)
