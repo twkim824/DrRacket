@@ -1,0 +1,24 @@
+(require 2htdp/image)
+
+(define (sum-list list)
+  (if (empty? list)
+      0
+      (+ (first list)
+         (sum-list (rest list)))))
+
+(check-expect (sum-list (list 1 2 3)) 6)
+
+(define (listlength list)
+    (if (empty? list)
+        0
+        (+ 1 (listlength (rest list)))))
+
+(check-expect (listlength (list 4 1 2 3)) 4)
+
+(define (iterated-beside image-code howmany)
+  (if (= howmany 0)
+      (square 0 "solid" "white")
+      (beside image-code
+              (iterated-beside image-code (- howmany 1)))))
+
+(check-expect (iterated-beside (square 50 "outline" "black") 3) .)
